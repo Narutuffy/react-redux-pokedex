@@ -1,0 +1,11 @@
+.container-fluid {
+    padding-top: 20px;
+}
+
+.container {
+    margin-top: 60px;
+}
+
+.table {
+    text-transform: capitalize;
+}
