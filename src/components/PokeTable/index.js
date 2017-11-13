@@ -16,6 +16,30 @@ class PokeTable extends Component {
     this.props.fetchPokemons(10);
   }
 
+  selectPagination(event) {
+    const noOfPokemons = event.target.textContent;
+    document.getElementById('pagination-button').innerHTML = noOfPokemons;
+    switch (noOfPokemons) {
+      case '10':
+        this.props.fetchPokemons(10);
+        break;
+      case '20':
+        this.props.fetchPokemons(20);
+        break;
+      case '30':
+        this.props.fetchPokemons(30);
+        break;
+      case '40':
+        this.props.fetchPokemons(40);
+        break;
+      case '50':
+        this.props.fetchPokemons(50);
+        break;
+      default:
+        break;
+    }
+  }
+
   selectPokemonType(event) {
     const type = event.target.textContent;
     document.getElementById('dropdown-input').value = type;
@@ -85,24 +109,29 @@ class PokeTable extends Component {
     }
   }
 
+  renderNavigation() {
+    const { next, previous } = this.props.pokemonsData.pokemonsMeta;
+
+  }
+
   renderPokemonRows() {
-    const { pokemons } = this.props;
+    const { pokemons } = this.props.pokemonsData;
     console.log(pokemons);
     return pokemons.map(({
       name, sprites, types, height, weight,
     }) => (
       <tr key={name}>
-    <td>{name}</td>
-    <td><img src={sprites.front_default} /></td>
-    <td>{types.map(({ type }) => (<div>{`${type.name} `}</div>))}</td>
-    <td><div>{`height: ${height / 10}m`}</div><div>{`weight: ${weight / 10}kg`}</div></td>
-  </tr>
+        <td>{name}</td>
+        <td><img src={sprites.front_default} alt="img" /></td>
+        <td>{types.map(({ type }) => (<div>{`${type.name} `}</div>))}</td>
+        <td><div>{`height: ${height / 10}m`}</div><div>{`weight: ${weight / 10}kg`}</div></td>
+      </tr>
     ));
   }
 
 
   render() {
-    if (this.props.pokemons.length === 0) { return <div>Loading...</div>; }
+    if (!this.props.pokemonsData.pokemons) { return <div>Loading...</div>; }
     return (
       <div>
         <div className="container-fluid">
@@ -166,15 +195,15 @@ class PokeTable extends Component {
             </div>
             <div className="col-2">
               <div className="btn-group">
-                <button type="button" className="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <button id="pagination-button" type="button" className="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Pagination
                 </button>
                 <div className="dropdown-menu">
-                  <a className="dropdown-item" href="#">10</a>
-                  <a className="dropdown-item" href="#">20</a>
-                  <a className="dropdown-item" href="#">30</a>
-                  <a className="dropdown-item" href="#">40</a>
-                  <a className="dropdown-item" href="#">50</a>
+                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >10</a>
+                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >20</a>
+                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >30</a>
+                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >40</a>
+                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >50</a>
                 </div>
               </div>
             </div>
@@ -192,8 +221,19 @@ class PokeTable extends Component {
             </thead>
             <tbody>
               {this.renderPokemonRows()}
+              {this.renderNavigation()}
             </tbody>
           </table>
+        </div>
+        <div className="container">
+          <div className="row justify-content-center">
+            <div className="col-1">
+              <a className="nav-link" href="#">Previous</a>
+            </div>
+            <div className="col-1" >
+              <a className="nav-link" href="#">Next</a>
+            </div>
+          </div>
         </div>
       </div>
     );
@@ -204,8 +244,8 @@ function mapDispatchToProps(dispatch) {
   return bindActionCreators({ fetchPokemonType, fetchPokemons }, dispatch);
 }
 
-function mapStateToProps({ pokemons }) {
-  return { pokemons };
+function mapStateToProps({ pokemonsData }) {
+  return { pokemonsData };
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(PokeTable);

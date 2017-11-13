@@ -1,11 +1,16 @@
 import { FETCH_POKEMONS, FETCH_POKEMON_TYPE } from '../actions';
 
-export default function (state = [], action) {
+export default function (state = {}, action) {
+  let pokemons;
+  let pokemonsMeta;
   switch (action.type) {
     case FETCH_POKEMONS:
-      return action.payload.map(({ data }) => data);
+      pokemonsMeta = action.payload[0];
+      pokemons = action.payload[1].map(({ data }) => data);
+      return { pokemons, pokemonsMeta };
     case FETCH_POKEMON_TYPE:
-      return action.payload.map(({ data }) => data);
+      pokemons = action.payload.map(({ data }) => data); 
+      return { pokemons };
     default:
       return state;
   }
