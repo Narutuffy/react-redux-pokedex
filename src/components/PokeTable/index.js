@@ -7,7 +7,9 @@ import './style.css';
 class PokeTable extends Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      pokemons: this.props.pokemonsData.pokemons,
+    };
     this.renderPokemonRows = this.renderPokemonRows.bind(this);
     this.selectPokemonType = this.selectPokemonType.bind(this);
     this.Navigate = this.Navigate.bind(this);
@@ -18,10 +20,21 @@ class PokeTable extends Component {
     this.props.fetchPokemons(`${BASE_URL}/pokemon/?limit=10`);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (this.props.pokemonsData !== nextProps.pokemonsData) {
+      this.setState({
+        pokemons: nextProps.pokemonsData.pokemons,
+      });
+    }
+  }
+
   searchPokemon(event) {
-    const input = document.getElementById("pokemon-search");
+    const input = document.getElementById('pokemon-search');
     const name = input.value;
     this.props.searchPokemon(name);
+    this.setState({
+      pokemons: null,
+    });
   }
 
   Navigate(event) {
@@ -37,6 +50,9 @@ class PokeTable extends Component {
       default:
         break;
     }
+    this.setState({
+      pokemons: null,
+    });
   }
 
   selectPagination(event) {
@@ -67,6 +83,9 @@ class PokeTable extends Component {
       default:
         break;
     }
+    this.setState({
+      pokemons: null,
+    });
   }
 
   selectPokemonType(event) {
@@ -137,10 +156,23 @@ class PokeTable extends Component {
       default:
         break;
     }
+    this.setState({ pokemons: null });
+  }
+
+  renderLoading() {
+    return (
+      <div className="overlay">
+        <img src="/images/pokeball.svg" alt="img" />
+        <p>
+          Getting your pokemons out of the pokeballs
+          It might take some time
+        </p>
+      </div>
+    );
   }
 
   renderPokemonRows() {
-    const { pokemons } = this.props.pokemonsData;
+    const { pokemons } = this.state;
     console.log(pokemons);
     return pokemons.map(({
       name, sprites, types, height, weight,
@@ -156,7 +188,7 @@ class PokeTable extends Component {
 
 
   render() {
-    if (!this.props.pokemonsData.pokemons) { return <div>Loading...</div>; }
+    if (!this.state.pokemons) { return <div>{this.renderLoading()}</div>; }
     return (
       <div>
         <div className="container-fluid">
@@ -249,13 +281,13 @@ class PokeTable extends Component {
               {this.renderPokemonRows()}
             </tbody>
           </table>
-        </div>
-        <div className="row justify-content-center">
-          <div className="col-1">
-            <a href="#" className="nav-link" onClick={event => this.Navigate(event)} >Previous</a>
-          </div>
-          <div className="col-1" >
-            <a href="#" className="nav-link" onClick={event => this.Navigate(event)} >Next</a>
+          <div className="row justify-content-center">
+            <div className="col-1">
+              <a href="#" className="nav-link" onClick={event => this.Navigate(event)} >Previous</a>
+            </div>
+            <div className="col-1" >
+              <a href="#" className="nav-link" onClick={event => this.Navigate(event)} >Next</a>
+            </div>
           </div>
         </div>
       </div>
