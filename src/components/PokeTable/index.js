@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
+import img from '../../images/Pokeball.svg';
 import { fetchPokemons, fetchPokemonType, searchPokemon, BASE_URL } from '../../actions';
 import './style.css';
 
@@ -9,11 +10,13 @@ class PokeTable extends Component {
     super(props);
     this.state = {
       pokemons: this.props.pokemonsData.pokemons,
+      pokemonName: '',
     };
     this.renderPokemonRows = this.renderPokemonRows.bind(this);
     this.selectPokemonType = this.selectPokemonType.bind(this);
     this.Navigate = this.Navigate.bind(this);
     this.searchPokemon = this.searchPokemon.bind(this);
+    this.triggerLoading = this.triggerLoading.bind(this);
   }
 
   componentDidMount() {
@@ -28,13 +31,16 @@ class PokeTable extends Component {
     }
   }
 
-  searchPokemon(event) {
-    const input = document.getElementById('pokemon-search');
-    const name = input.value;
-    this.props.searchPokemon(name.toLowerCase());
+  triggerLoading() {
     this.setState({
       pokemons: null,
     });
+  }
+
+  searchPokemon(event) {
+    event.preventDefault();
+    this.props.searchPokemon(this.state.pokemonName);
+    this.triggerLoading();
   }
 
   Navigate(event) {
@@ -50,119 +56,29 @@ class PokeTable extends Component {
       default:
         break;
     }
-    this.setState({
-      pokemons: null,
-    });
+    this.triggerLoading();
   }
 
   selectPagination(event) {
-    let url;
-    const noOfPokemons = event.target.textContent;
+    const noOfPokemons = event.target.dataset.id;
     document.getElementById('pagination-button').innerHTML = noOfPokemons;
-    switch (noOfPokemons) {
-      case '10':
-        url = `${BASE_URL}/pokemon/?limit=10`;
-        this.props.fetchPokemons(url);
-        break;
-      case '20':
-        url = `${BASE_URL}/pokemon/?limit=20`;
-        this.props.fetchPokemons(url);
-        break;
-      case '30':
-        url = `${BASE_URL}/pokemon/?limit=30`;
-        this.props.fetchPokemons(url);
-        break;
-      case '40':
-        url = `${BASE_URL}/pokemon/?limit=40`;
-        this.props.fetchPokemons(url);
-        break;
-      case '50':
-        url = `${BASE_URL}/pokemon/?limit=50`;
-        this.props.fetchPokemons(url);
-        break;
-      default:
-        break;
-    }
-    this.setState({
-      pokemons: null,
-    });
+    const url = `${BASE_URL}/pokemon/?limit=${noOfPokemons}`;
+    this.props.fetchPokemons(url);
+    this.triggerLoading();
   }
 
   selectPokemonType(event) {
     const type = event.target.textContent;
-    console.log(event);
+    const typeId = event.target.dataset.id;
     document.getElementById('dropdown-input').value = type;
-    switch (type) {
-      case 'Normal':
-        this.props.fetchPokemonType(1);
-        break;
-      case 'Fighting':
-        this.props.fetchPokemonType(2);
-        break;
-      case 'Flying':
-        this.props.fetchPokemonType(3);
-        break;
-      case 'Poison':
-        this.props.fetchPokemonType(4);
-        break;
-      case 'Ground':
-        this.props.fetchPokemonType(5);
-        break;
-      case 'Rock':
-        this.props.fetchPokemonType(6);
-        break;
-      case 'Bug':
-        this.props.fetchPokemonType(7);
-        break;
-      case 'Ghost':
-        this.props.fetchPokemonType(8);
-        break;
-      case 'Steel':
-        this.props.fetchPokemonType(9);
-        break;
-      case 'Fire':
-        this.props.fetchPokemonType(10);
-        break;
-      case 'Water':
-        this.props.fetchPokemonType(11);
-        break;
-      case 'Grass':
-        this.props.fetchPokemonType(12);
-        break;
-      case 'Electric':
-        this.props.fetchPokemonType(13);
-        break;
-      case 'Psychic':
-        this.props.fetchPokemonType(14);
-        break;
-      case 'Ice':
-        this.props.fetchPokemonType(15);
-        break;
-      case 'Dragon':
-        this.props.fetchPokemonType(16);
-        break;
-      case 'Dark':
-        this.props.fetchPokemonType(17);
-        break;
-      case 'Fairy':
-        this.props.fetchPokemonType(18);
-        break;
-      case 'Unknown':
-        this.props.fetchPokemonType(19);
-        break;
-      case 'Shadow':
-        this.props.fetchPokemonType(20);
-        break;
-      default:
-        break;
-    }
-    this.setState({ pokemons: null });
+    this.props.fetchPokemonType(typeId);
+    this.triggerLoading();
   }
 
   renderLoading() {
     return (
       <div className="overlay">
-        <img src="/images/pokeball.svg" alt="img" />
+        <img src={img} alt="img" />
         <p>
           Getting your pokemons out of the pokeballs.
         </p>
@@ -175,14 +91,13 @@ class PokeTable extends Component {
 
   renderPokemonRows() {
     const { pokemons } = this.state;
-    console.log(pokemons);
     return pokemons.map(({
       name, sprites, types, height, weight,
     }) => (
       <tr key={name}>
         <td>{name}</td>
         <td><img src={sprites.front_default} alt="img" /></td>
-        <td>{types.map(({ type }) => (<div>{`${type.name} `}</div>))}</td>
+        <td>{types.map(({ type }) => (<div key={type.name}>{`${type.name} `}</div>))}</td>
         <td><div>{`height: ${height / 10}m`}</div><div>{`weight: ${weight / 10}kg`}</div></td>
       </tr>
     ));
@@ -200,12 +115,12 @@ class PokeTable extends Component {
                 <button id="pagination-button" type="button" className="btn btn-info dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                   Pokemons per page
                 </button>
-                <div className="dropdown-menu pagination-dropdown dropdown-menu-right">
-                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >10</a>
-                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >20</a>
-                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >30</a>
-                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >40</a>
-                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >50</a>
+                <div role="select" className="dropdown-menu pagination-dropdown dropdown-menu-right" onClick={event => this.selectPagination(event)} >
+                  <a className="dropdown-item" href="#" data-id={10} >10</a>
+                  <a className="dropdown-item" href="#" data-id={20} >20</a>
+                  <a className="dropdown-item" href="#" data-id={30} >30</a>
+                  <a className="dropdown-item" href="#" data-id={40} >40</a>
+                  <a className="dropdown-item" href="#" data-id={50} >50</a>
                 </div>
               </div>
             </div>
@@ -232,44 +147,45 @@ class PokeTable extends Component {
                   >
                     Types
                   </button>
-                  <div className="dropdown-menu dropdown-menu-right scrollable-dropdown">
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Normal</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Fighting</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Flying</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Poison</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Ground</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Rock</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Bug</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Ghost</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Steel</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Fire</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Water</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Grass</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Electric</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Psychic</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Ice</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Dragon</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Dark</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Fairy</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Unknown</a>
-                    <a className="dropdown-item" href="#" onClick={event => this.selectPokemonType(event)} >Shadow</a>
+                  <div role="select" className="dropdown-menu dropdown-menu-right scrollable-dropdown" onClick={event => this.selectPokemonType(event)}>
+                    <a className="dropdown-item" href="#" data-id={1} >Normal</a>
+                    <a className="dropdown-item" href="#" data-id={2} >Fighting</a>
+                    <a className="dropdown-item" href="#" data-id={3} >Flying</a>
+                    <a className="dropdown-item" href="#" data-id={4} >Poison</a>
+                    <a className="dropdown-item" href="#" data-id={5} >Ground</a>
+                    <a className="dropdown-item" href="#" data-id={6} >Rock</a>
+                    <a className="dropdown-item" href="#" data-id={7} >Bug</a>
+                    <a className="dropdown-item" href="#" data-id={8} >Ghost</a>
+                    <a className="dropdown-item" href="#" data-id={9} >Steel</a>
+                    <a className="dropdown-item" href="#" data-id={10} >Fire</a>
+                    <a className="dropdown-item" href="#" data-id={11} >Water</a>
+                    <a className="dropdown-item" href="#" data-id={12} >Grass</a>
+                    <a className="dropdown-item" href="#" data-id={13} >Electric</a>
+                    <a className="dropdown-item" href="#" data-id={14} >Psychic</a>
+                    <a className="dropdown-item" href="#" data-id={15} >Ice</a>
+                    <a className="dropdown-item" href="#" data-id={16} >Dragon</a>
+                    <a className="dropdown-item" href="#" data-id={17} >Dark</a>
+                    <a className="dropdown-item" href="#" data-id={18} >Fairy</a>
+                    <a className="dropdown-item" href="#" data-id={19} >Unknown</a>
+                    <a className="dropdown-item" href="#" data-id={20} >Shadow</a>
                   </div>
                 </div>
               </div>
             </div>
             <div className="col-md-4 col-sm-12">
-              <div className="input-group">
+              <form onSubmit={this.searchPokemon} className="input-group">
                 <input
                   type="text"
-                  id="pokemon-search"
                   className="form-control"
                   placeholder="Search a Pokemon"
                   aria-label="Search"
+                  onChange={e => this.setState({ pokemonName: e.target.value })}
+                  value={this.state.pokemonName}
                 />
                 <span className="input-group-btn">
-                  <button className="btn btn-secondary" type="button" onClick={event => this.searchPokemon(event)} >Search</button>
+                  <button className="btn btn-secondary" type="submit" >Search</button>
                 </span>
-              </div>
+              </form>
             </div>
           </div>
         </div>

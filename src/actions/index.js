@@ -15,6 +15,9 @@ export function fetchPokemons(url) {
         return promise;
       });
       return axios.all(promiseArray);
+    })
+    .catch((err) => {
+      console.error('Error while fetching:', err);
     });
   const meta = axiosGet.then(({ data }) => ({ next: data.next, previous: data.previous }));
   return {
@@ -29,6 +32,9 @@ export function fetchPokemonType(typeId) {
     .then(({ data }) => {
       const promiseArray = data.pokemon.map(({ pokemon }) => axios.get(pokemon.url));
       return axios.all(promiseArray);
+    })
+    .catch((err) => {
+      console.error('Error while fetching:', err);
     });
   return {
     type: FETCH_POKEMON_TYPE,
