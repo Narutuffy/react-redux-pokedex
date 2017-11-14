@@ -39,7 +39,7 @@ class PokeTable extends Component {
 
   searchPokemon(event) {
     event.preventDefault();
-    this.props.searchPokemon(this.state.pokemonName);
+    this.props.searchPokemon(this.state.pokemonName.toLowerCase());
     this.triggerLoading();
   }
 
@@ -80,9 +80,7 @@ class PokeTable extends Component {
       <div className="overlay">
         <img src={img} alt="img" />
         <p>
-          Getting your pokemons out of the pokeballs.
-        </p>
-        <p>
+          Getting your pokemons out of the pokeballs.<br />
           It might take some time
         </p>
       </div>
