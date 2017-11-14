@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const BASE_URL = 'http://pokeapi.salestock.net/api/v2';
+export const BASE_URL = 'https://pokeapi.co/api/v2';
 
 export const FETCH_POKEMONS = 'FETCH_POKEMONS';
 export const FETCH_POKEMON_TYPE = 'FETCH_POKEMON_TYPE';
