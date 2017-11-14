@@ -1,13 +1,12 @@
 import axios from 'axios';
 
-const BASE_URL = ' http://pokeapi.salestock.net/api/v2';
+export const BASE_URL = 'http://pokeapi.salestock.net/api/v2';
 
 export const FETCH_POKEMONS = 'FETCH_POKEMONS';
 export const FETCH_POKEMON_TYPE = 'FETCH_POKEMON_TYPE';
-export const FETCH_POKEMONS_META = 'FETCH_POKEMONS_META';
+export const SEARCH_POKEMON = 'SEARCH_POKEMON';
 
-export function fetchPokemons(noOfPokemons) {
-  const url = `${BASE_URL}/pokemon/?limit=${noOfPokemons}`;
+export function fetchPokemons(url) {
   const axiosGet = axios.get(url);
   const promisefetchdetails = axiosGet
     .then(({ data }) => {
@@ -24,13 +23,6 @@ export function fetchPokemons(noOfPokemons) {
   };
 }
 
-export function fetchPokemonsMeta(payload) {
-  return {
-    type: FETCH_POKEMONS_META,
-    payload,
-  };
-}
-
 export function fetchPokemonType(typeId) {
   const url = `${BASE_URL}/type/${typeId}/`;
   const fetchPokemonsTypePromise = axios.get(url)
@@ -41,5 +33,14 @@ export function fetchPokemonType(typeId) {
   return {
     type: FETCH_POKEMON_TYPE,
     payload: fetchPokemonsTypePromise,
+  };
+}
+
+export function searchPokemon(name) {
+  const url = `${BASE_URL}/pokemon/${name}/`;
+  const searchPokemonPromise = axios.get(url);
+  return {
+    type: SEARCH_POKEMON,
+    payload: searchPokemonPromise,
   };
 }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { fetchPokemons, fetchPokemonType } from '../../actions';
+import { fetchPokemons, fetchPokemonType, searchPokemon, BASE_URL } from '../../actions';
 import './style.css';
 
 class PokeTable extends Component {
@@ -10,30 +10,59 @@ class PokeTable extends Component {
     this.state = {};
     this.renderPokemonRows = this.renderPokemonRows.bind(this);
     this.selectPokemonType = this.selectPokemonType.bind(this);
+    this.Navigate = this.Navigate.bind(this);
+    this.searchPokemon = this.searchPokemon.bind(this);
   }
 
   componentDidMount() {
-    this.props.fetchPokemons(10);
+    this.props.fetchPokemons(`${BASE_URL}/pokemon/?limit=10`);
+  }
+
+  searchPokemon(event) {
+    const input = document.getElementById("pokemon-search");
+    const name = input.value;
+    this.props.searchPokemon(name);
+  }
+
+  Navigate(event) {
+    const { next, previous } = this.props.pokemonsData.pokemonsMeta;
+    const selected = event.target.textContent.toLowerCase();
+    switch (selected) {
+      case 'next':
+        this.props.fetchPokemons(next);
+        break;
+      case 'previous':
+        this.props.fetchPokemons(previous);
+        break;
+      default:
+        break;
+    }
   }
 
   selectPagination(event) {
+    let url;
     const noOfPokemons = event.target.textContent;
     document.getElementById('pagination-button').innerHTML = noOfPokemons;
     switch (noOfPokemons) {
       case '10':
-        this.props.fetchPokemons(10);
+        url = `${BASE_URL}/pokemon/?limit=10`;
+        this.props.fetchPokemons(url);
         break;
       case '20':
-        this.props.fetchPokemons(20);
+        url = `${BASE_URL}/pokemon/?limit=20`;
+        this.props.fetchPokemons(url);
         break;
       case '30':
-        this.props.fetchPokemons(30);
+        url = `${BASE_URL}/pokemon/?limit=20`;
+        this.props.fetchPokemons(url);
         break;
       case '40':
-        this.props.fetchPokemons(40);
+        url = `${BASE_URL}/pokemon/?limit=20`;
+        this.props.fetchPokemons(url);
         break;
       case '50':
-        this.props.fetchPokemons(50);
+        url = `${BASE_URL}/pokemon/?limit=20`;
+        this.props.fetchPokemons(url);
         break;
       default:
         break;
@@ -42,6 +71,7 @@ class PokeTable extends Component {
 
   selectPokemonType(event) {
     const type = event.target.textContent;
+    console.log(event);
     document.getElementById('dropdown-input').value = type;
     switch (type) {
       case 'Normal':
@@ -107,11 +137,6 @@ class PokeTable extends Component {
       default:
         break;
     }
-  }
-
-  renderNavigation() {
-    const { next, previous } = this.props.pokemonsData.pokemonsMeta;
-
   }
 
   renderPokemonRows() {
@@ -184,12 +209,13 @@ class PokeTable extends Component {
               <div className="input-group">
                 <input
                   type="text"
+                  id="pokemon-search"
                   className="form-control"
-                  placeholder="Search"
+                  placeholder="Search a Pokemon"
                   aria-label="Search"
                 />
                 <span className="input-group-btn">
-                  <button className="btn btn-secondary" type="button">Search</button>
+                  <button className="btn btn-secondary" type="button" onClick={event => this.searchPokemon(event)} >Search</button>
                 </span>
               </div>
             </div>
@@ -221,18 +247,15 @@ class PokeTable extends Component {
             </thead>
             <tbody>
               {this.renderPokemonRows()}
-              {this.renderNavigation()}
             </tbody>
           </table>
         </div>
-        <div className="container">
-          <div className="row justify-content-center">
-            <div className="col-1">
-              <a className="nav-link" href="#">Previous</a>
-            </div>
-            <div className="col-1" >
-              <a className="nav-link" href="#">Next</a>
-            </div>
+        <div className="row justify-content-center">
+          <div className="col-1">
+            <a href="#" className="nav-link" onClick={event => this.Navigate(event)} >Previous</a>
+          </div>
+          <div className="col-1" >
+            <a href="#" className="nav-link" onClick={event => this.Navigate(event)} >Next</a>
           </div>
         </div>
       </div>
@@ -241,7 +264,7 @@ class PokeTable extends Component {
 }
 
 function mapDispatchToProps(dispatch) {
-  return bindActionCreators({ fetchPokemonType, fetchPokemons }, dispatch);
+  return bindActionCreators({ fetchPokemonType, fetchPokemons, searchPokemon }, dispatch);
 }
 
 function mapStateToProps({ pokemonsData }) {
