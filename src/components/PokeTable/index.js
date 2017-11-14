@@ -31,7 +31,7 @@ class PokeTable extends Component {
   searchPokemon(event) {
     const input = document.getElementById('pokemon-search');
     const name = input.value;
-    this.props.searchPokemon(name);
+    this.props.searchPokemon(name.toLowerCase());
     this.setState({
       pokemons: null,
     });
@@ -69,15 +69,15 @@ class PokeTable extends Component {
         this.props.fetchPokemons(url);
         break;
       case '30':
-        url = `${BASE_URL}/pokemon/?limit=20`;
+        url = `${BASE_URL}/pokemon/?limit=30`;
         this.props.fetchPokemons(url);
         break;
       case '40':
-        url = `${BASE_URL}/pokemon/?limit=20`;
+        url = `${BASE_URL}/pokemon/?limit=40`;
         this.props.fetchPokemons(url);
         break;
       case '50':
-        url = `${BASE_URL}/pokemon/?limit=20`;
+        url = `${BASE_URL}/pokemon/?limit=50`;
         this.props.fetchPokemons(url);
         break;
       default:
@@ -164,7 +164,9 @@ class PokeTable extends Component {
       <div className="overlay">
         <img src="/images/pokeball.svg" alt="img" />
         <p>
-          Getting your pokemons out of the pokeballs
+          Getting your pokemons out of the pokeballs.
+        </p>
+        <p>
           It might take some time
         </p>
       </div>
@@ -191,9 +193,27 @@ class PokeTable extends Component {
     if (!this.state.pokemons) { return <div>{this.renderLoading()}</div>; }
     return (
       <div>
+        <div className="container">
+          <div className="row justify-content-end">
+            <div className="col-md-1 col-sm-12">
+              <div className="btn-group">
+                <button id="pagination-button" type="button" className="btn btn-info dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  Pokemons per page
+                </button>
+                <div className="dropdown-menu pagination-dropdown dropdown-menu-right">
+                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >10</a>
+                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >20</a>
+                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >30</a>
+                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >40</a>
+                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >50</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
         <div className="container-fluid">
           <div className="row justify-content-center">
-            <div className="col-3">
+            <div className="col-md-3 col-sm-12">
               <div className="input-group">
                 <input
                   type="text"
@@ -237,7 +257,7 @@ class PokeTable extends Component {
                 </div>
               </div>
             </div>
-            <div className="col-4">
+            <div className="col-md-4 col-sm-12">
               <div className="input-group">
                 <input
                   type="text"
@@ -251,41 +271,29 @@ class PokeTable extends Component {
                 </span>
               </div>
             </div>
-            <div className="col-2">
-              <div className="btn-group">
-                <button id="pagination-button" type="button" className="btn btn-info dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                  Pagination
-                </button>
-                <div className="dropdown-menu">
-                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >10</a>
-                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >20</a>
-                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >30</a>
-                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >40</a>
-                  <a className="dropdown-item" href="#" onClick={event => this.selectPagination(event)} >50</a>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
         <div className="container">
-          <table className="table table-striped">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Avatar</th>
-                <th>Type</th>
-                <th>Attributes</th>
-              </tr>
-            </thead>
-            <tbody>
-              {this.renderPokemonRows()}
-            </tbody>
-          </table>
-          <div className="row justify-content-center">
-            <div className="col-1">
+          <div className="table-responsive">
+            <table className="table table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Avatar</th>
+                  <th>Type</th>
+                  <th>Attributes</th>
+                </tr>
+              </thead>
+              <tbody>
+                {this.renderPokemonRows()}
+              </tbody>
+            </table>
+          </div>
+          <div className="row justify-content-around">
+            <div className="col-sm-auto">
               <a href="#" className="nav-link" onClick={event => this.Navigate(event)} >Previous</a>
             </div>
-            <div className="col-1" >
+            <div className="col-sm-auto" >
               <a href="#" className="nav-link" onClick={event => this.Navigate(event)} >Next</a>
             </div>
           </div>

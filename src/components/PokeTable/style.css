@@ -3,7 +3,7 @@
 }
 
 .container {
-    margin-top: 60px;
+    margin-top: 20px;
 }
 
 .table {
@@ -24,6 +24,10 @@
     align-items: center;
 }
 
+.overlay p {
+    text-align: center;
+}
+
 .overlay img {
     height: 100px;
     width: 100px;
@@ -32,6 +36,19 @@
 
 @keyframes spin {
     100% {  
-        transform:rotate(360deg);
+        transform: rotate(360deg);
     } 
+}
+
+.col-sm-12{
+    margin-top: 10px;
+}
+
+.row {
+    text-align: right;
+    align-items: center;
+}
+
+.pagination-dropdown {
+    min-width: 98px;
 }
