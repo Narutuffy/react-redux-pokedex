@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-export const BASE_URL = 'https://pokeapi.co/api/v2';
+export const BASE_URL = 'http://pokeapi.salestock.net/api/v2';
 
 export const FETCH_POKEMONS = 'FETCH_POKEMONS';
 export const FETCH_POKEMON_TYPE = 'FETCH_POKEMON_TYPE';
@@ -44,7 +44,10 @@ export function fetchPokemonType(typeId) {
 
 export function searchPokemon(name) {
   const url = `${BASE_URL}/pokemon/${name}/`;
-  const searchPokemonPromise = axios.get(url);
+  const searchPokemonPromise = axios.get(url)
+    .catch((err) => {
+      console.error('Error while fetching:', err);
+    });
   return {
     type: SEARCH_POKEMON,
     payload: searchPokemonPromise,
