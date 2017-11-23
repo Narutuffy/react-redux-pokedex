@@ -164,8 +164,8 @@ class PokeTable extends Component {
                     <a className="dropdown-item" href="#" data-id={16} >Dragon</a>
                     <a className="dropdown-item" href="#" data-id={17} >Dark</a>
                     <a className="dropdown-item" href="#" data-id={18} >Fairy</a>
-                    <a className="dropdown-item" href="#" data-id={19} >Unknown</a>
-                    <a className="dropdown-item" href="#" data-id={20} >Shadow</a>
+                    <a className="dropdown-item" href="#" data-id={10001} >Unknown</a>
+                    <a className="dropdown-item" href="#" data-id={10002} >Shadow</a>
                   </div>
                 </div>
               </div>
